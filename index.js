@@ -28,35 +28,30 @@ const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8')
 const dataObject = JSON.parse(data)
 
 const server = http.createServer((req, res) => {
-    const pathName = req.url;
-    // console.log(req.url);
-    // console.log(url.parse(req.url, true));
-    // const { query, pathName } = url.parse(req.url, true)
-
-   if(pathName === '/' || pathName === '/overview') {
+    const{query, pathname} = url.parse(req.url, true)
+   if(pathname === '/' || pathname === '/overview') {
     res.writeHead(200, {"Content-type": "text/html"})
+
     const cardHtml = dataObject.map(el => replaceTemplate(tempCard, el)).join('');
     const output = tempOverview.replace('{%PRODUCT_CARDS%}', cardHtml);
     res.end(output)
 
-   }else if(pathName === '/product') {
-    //    console.log(query)
-    //    console.log('this is the product')
-      
-    // res.writeHead(200, {"Content-type": "text/html"})
-    
-    const product = dataObject[query.id];
-    const output = replaceTemplate(tempProduct, product);
-    res.end(output);
+    //Product page
+   }else if(pathname === '/product') {
+        console.log(query);
+       res.end('this is the product')
 
-   }else if(pathName === '/api') {
+    //API
+
+   }else if(pathname === '/api') {
        fs.readFile(`${__dirname}/dev-data/data.json`, 'utf-8', (err, data) => {
         //    const productData = JSON.parse(data);
            res.writeHead(200, {"Content-type": "application/json"})
         //    console.log(productData);
            res.end(data);     
        })
-       
+
+       //Not found       
    }else{
        res.writeHead(404, {
            'Content-type': 'text/html',
